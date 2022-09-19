@@ -244,7 +244,6 @@ namespace MlxSerialTerminal
 
         }
 
-
         struct TLV_CMD_HEADER
         {
             //https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types
