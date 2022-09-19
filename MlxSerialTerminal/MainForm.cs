@@ -129,6 +129,7 @@ namespace MlxSerialTerminal
                     _serialPortMgr.Open();
                     timer2SerialRead.Start();
                     timer_ports.Stop();
+                    btn_OpenClosePort.Text = "Close Port";
                 }
                 catch (UnauthorizedAccessException e)
                 {
@@ -139,7 +140,8 @@ namespace MlxSerialTerminal
                     {
                         ts_CommPorts.Items.Add(sName);
                     }
-                    timer_ports.Start();
+                    //timer_ports.Start();
+                    btn_OpenClosePort.Text = "Open Port";
 
                 }
                 catch (IOException e)
@@ -151,7 +153,8 @@ namespace MlxSerialTerminal
                     {
                         ts_CommPorts.Items.Add(sName);
                     }
-                    timer_ports.Start();
+                    //timer_ports.Start();
+                    btn_OpenClosePort.Text = "Open Port";
 
                 }
             }
@@ -161,6 +164,7 @@ namespace MlxSerialTerminal
                 timer2SerialRead.Stop();
                 addDataToFromSerial("port:" + _serialPortMgr.GetPortName() + " is closed" + "\r\n");
                 //timer_ports.Start();
+                btn_OpenClosePort.Text = "Open Port";
             }
 
 
@@ -171,7 +175,7 @@ namespace MlxSerialTerminal
             if (_serialPortMgr.IsOpen() == false)
             {
                 timer2SerialRead.Stop();
-                timer_ports.Start();
+                //timer_ports.Start();
                 return;
             }
 
