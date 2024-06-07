@@ -14,7 +14,7 @@ namespace MlxSerialTerminal
         public SerialPortMgr()
         {
             _serialPort = new SerialPort();
-            _serialPort.PortName = "COM1";
+            _serialPort.PortName = "COM7";
             // Set the read/write timeouts
             _serialPort.ReadTimeout = -1;
             _serialPort.WriteTimeout = -1;

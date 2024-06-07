@@ -22,8 +22,10 @@ namespace MlxSerialTerminal
     public partial class MainForm : Form
     {
         private SerialPortMgr _serialPortMgr = new SerialPortMgr();
-        private ConfigMgr _configMgr = null;
+        private ConfigMgr _configMgr;
         private FilterMgr _filterMgr = new FilterMgr();
+        private CmdMgr _cmdMgr ;
+       
         private bool _IsHitOn = false;
         private string _sDebugHlp = "";
 
@@ -45,8 +47,24 @@ namespace MlxSerialTerminal
 
             _configMgr = new ConfigMgr();
 
+            _cmdMgr = new CmdMgr(this);
+
+            add_all_available_comm_port();
+
             manageCommPort();
         }
+
+        void add_all_available_comm_port()
+        {
+            string[] sNames = SerialPort.GetPortNames();
+            ts_CommPorts.Items.Clear();
+            foreach (string sName in sNames)
+            {
+                ts_CommPorts.Items.Add(sName);
+            }
+        }
+
+        Int32 nLineCount = 0;
 
         void addDataToFromSerial(string sInData, Color? color = null)
         {
@@ -55,16 +73,20 @@ namespace MlxSerialTerminal
             if (btn_StopStart.Text == "Stop")
             {
                 ApplyHitOn(sText);
+                sText =  _cmdMgr.processCmd(sText);
 
                 if (_filterMgr.GetEnabled() == true)
                 {
                     sText = _filterMgr.ApplyFilters(sText);
                 }
 
-                sText = sText.Replace("\r\r\n", "\r\n");
+                //sText = sText.Replace("\r\r\n", "\r\n");
+                //sText = nLineCount.ToString() + "  " + sText;
                 tb_Output.Select(tb_Output.TextLength, 0);
                 tb_Output.SelectionColor = clr;
                 tb_Output.AppendText(sText);
+                nLineCount++;
+                tb_lines.Text = nLineCount.ToString();
             }
         }
 
@@ -134,12 +156,7 @@ namespace MlxSerialTerminal
                 catch (UnauthorizedAccessException e)
                 {
                     addDataToFromSerial(e.Message + "\r\n");
-                    string[] sNames = SerialPort.GetPortNames();
-                    ts_CommPorts.Items.Clear();
-                    foreach (string sName in sNames)
-                    {
-                        ts_CommPorts.Items.Add(sName);
-                    }
+
                     //timer_ports.Start();
                     btn_OpenClosePort.Text = "Open Port";
 
@@ -147,12 +164,7 @@ namespace MlxSerialTerminal
                 catch (IOException e)
                 {
                     addDataToFromSerial(e.Message + "\r\n");
-                    string[] sNames = SerialPort.GetPortNames();
-                    ts_CommPorts.Items.Clear();
-                    foreach (string sName in sNames)
-                    {
-                        ts_CommPorts.Items.Add(sName);
-                    }
+
                     //timer_ports.Start();
                     btn_OpenClosePort.Text = "Open Port";
 
@@ -400,8 +412,15 @@ namespace MlxSerialTerminal
 
         private void btn_Clear_Click(object sender, EventArgs e)
         {
+            clearScreen();
+        }
+
+        public void clearScreen()
+        {
             tb_Output.Text = "";
             _sDebugHlp = "";
+            nLineCount = 0;
+            tb_lines.Text = nLineCount.ToString();
         }
 
         private void btn_Copy2Clipboard_Click(object sender, EventArgs e)
@@ -510,6 +529,11 @@ namespace MlxSerialTerminal
         private void ts_CommPorts_SelectedIndexChanged(object sender, EventArgs e)
         {
             _configMgr._configDetail.sPortName = ts_CommPorts.Text;
+        }
+
+        private void ts_CommPorts_DropDown(object sender, EventArgs e)
+        {
+            add_all_available_comm_port();
         }
     }
 }
